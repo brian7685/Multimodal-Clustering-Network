@@ -18,3 +18,5 @@ python -u train_tri_kmeans.py --num_thread_reader=74 --epochs=30 --batch_size=12
 --features_path_audio=/nobackup/projects/public/howto100m/parsed_videos \
 --checkpoint_dir=model_me/$model1 >> logs/$model1
 ```
+Weights
+https://drive.google.com/drive/folders/1J8v3Ya_H9ciX1KsLUtlqeiGaSjqVbp7j?usp=sharing
