@@ -1,0 +1,29 @@
+# get machine
+
+srun --gres=gpu:4 -N 1 --exclusive --mem=1000G --time 24:00:00 --cpus-per-task=74 --qos=sched_level_2 --pty /bin/bash
+
+# training
+
+model1=AVLnet_tri_single_cluster_128_soft_8000_project_cos_mil_e4_sp_6144
+
+python -u train_tri_cos_mil.py --num_thread_reader=74 --epochs=30 --batch_size=128 \
+--n_pair=32 --embd_dim=6144 --howto_audio_frames=1000 --min_time=10.0 --random_audio_windows=0  \
+--lr=0.0001 --tri_modal=1 --apex_level=1 --cluster=1 --soft_label=1 --start_cluster=0 --project=1 --project_dim=8000 \
+--features_path=/nobackup/users/kaudhkha/sightsound/data/howto/parsed_videos \
+--features_path_audio=/nobackup/projects/public/howto100m/parsed_videos \
+--pretrain_path=/nobackup/users/brian27/MCN_public/model_mcn/$model1/e9.pth \
+--checkpoint_dir=model_mcn/$model1 >> logs/$model1
+
+# resume pretrain
+
+--pretrain_path=/nobackup/users/brian27/avlnet_private/model_mcn/$model1/e9.pth \
+
+# test on youcook, MSR-VTT
+
+python train_tri_c.py --eval_msrvtt=1  --num_thread_reader=74 --batch_size=512 --epochs=30 --project=1 --project_dim=8000 \
+--lr_decay=1.0 --embd_dim=6144  --pretrain_path=model_mcn/AVLnet_tri_single_cluster_128_soft_8000_project_cos_mil_e4_sp_6144/e9.pth \
+--lr=1e-5 --tri_modal=1
+
+python train_tri_c.py --eval_youcook=1  --num_thread_reader=74 --batch_size=512 --epochs=30 --project=1 --project_dim=8000 \
+--lr_decay=1.0 --embd_dim=6144  --pretrain_path=model_mcn/AVLnet_tri_single_cluster_128_soft_8000_project_cos_mil_e4_sp_6144/e9.pth \
+--lr=1e-5 --tri_modal=1
